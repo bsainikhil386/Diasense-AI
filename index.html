@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DiaSense AI – Diabetes Risk Prediction</title><meta name="theme-color" content="#0a0a0b">
+<link rel="preconnect" href="https://api.fontshare.com"><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&f[]=satoshi@400,500,700&display=swap">
+<link rel="stylesheet" href="style.css"></head><body>
+<header class="nav" id="nav"><a class="brand" href="#top"><span class="dot"></span><span class="bn">Dia<b>Sense</b></span><em class="ai">AI</em></a>
+<nav><a href="#assess">Prediction</a><a href="#architecture">Architecture</a><a href="#protocol">Protocol</a></nav><a class="btn sm" href="#assess">Start prediction</a></header>
+<main id="top">
+<section class="hero"><p class="status rv"><i class="pulse"></i>System online · Risk model v1.0</p>
+<h1><span class="ln"><span>Know your diabetes risk,</span></span><span class="ln"><span class="clay">clearly and early.</span></span></h1>
+<p class="lead rv">Enter ten clinical signals and DiaSense AI returns an instant risk estimate, a factor-by-factor breakdown, doctor-ready next steps and a PDF report.</p>
+<div class="rv"><a class="btn" href="#assess">Start prediction</a> <a class="btn ghost" href="#architecture">See how it works</a></div></section>
+<section id="assess" class="panel"><h2>Diabetes risk prediction</h2>
+<p class="muted sub">Fields marked * are required. Your data stays in your browser – nothing is uploaded.</p>
+<form id="form" novalidate>
+<fieldset><legend>1 · Profile</legend><div class="grid">
+<label>Age (years) *<input id="age" type="number" step="1" placeholder="e.g. 45"><span class="err" id="e_age"></span></label>
+<label>Sex *<select id="sex"><option value="">Select</option><option>Female</option><option>Male</option><option>Other</option></select><span class="err" id="e_sex"></span></label>
+<label>Height (cm) *<input id="height" type="number" step="0.1" placeholder="e.g. 165"><span class="err" id="e_height"></span></label>
+<label>Weight (kg) *<input id="weight" type="number" step="0.1" placeholder="e.g. 72"><span class="err" id="e_weight"></span></label>
+<div class="bmi">BMI: <b id="bmi">–</b> <span id="bmiCat"></span></div></div></fieldset>
+
+<fieldset><legend>2 · Blood tests <small>(enter at least one)</small></legend><div class="grid">
+<label>Glucose test type<select id="gtype"><option value="fasting">Fasting (8+ hrs no food)</option><option value="random">Random (any time)</option><option value="ogtt">2 hours after glucose drink</option></select></label>
+<label>Blood glucose (mg/dL)<input id="glucose" type="number" step="1" placeholder="e.g. 108"><span class="err" id="e_glucose"></span></label>
+<label>HbA1c (%) <small>avg. of last 2–3 months</small><input id="a1c" type="number" step="0.1" placeholder="e.g. 5.9"><span class="err" id="e_a1c"></span></label>
+<label>Systolic BP (mmHg)<input id="sys" type="number" placeholder="e.g. 128"><span class="err" id="e_sys"></span></label>
+<label>Diastolic BP (mmHg)<input id="dia" type="number" placeholder="e.g. 82"><span class="err" id="e_dia"></span></label></div></fieldset>
+
+<fieldset><legend>3 · Lifestyle &amp; history</legend><div class="grid">
+<label>Family history of diabetes *<select id="family"><option value="">Select</option><option value="none">None known</option><option value="distant">Grandparent / aunt / uncle</option><option value="close">Parent or sibling</option></select><span class="err" id="e_family"></span></label>
+<label>Physical activity *<select id="activity"><option value="">Select</option><option value="low">Low (under 60 min/week)</option><option value="moderate">Moderate (60–150 min/week)</option><option value="high">High (150+ min/week)</option></select><span class="err" id="e_activity"></span></label>
+<label>Previous result *<select id="previous"><option value="">Select</option><option value="none">Never diagnosed / never tested</option><option value="prediabetes">Told I have prediabetes</option><option value="diabetes">Diagnosed with diabetes (monitoring)</option></select><span class="err" id="e_previous"></span></label>
+<label id="pregWrap" hidden>Pregnancy-related history<select id="preg"><option value="none">Not applicable</option><option value="pregnant">Currently pregnant</option><option value="gdm">Gestational diabetes in a past pregnancy</option></select></label></div>
+<div class="sym"><b>Current symptoms</b><label><input type="checkbox" name="sym" value="Excessive thirst"> Excessive thirst</label><label><input type="checkbox" name="sym" value="Frequent urination"> Frequent urination</label><label><input type="checkbox" name="sym" value="Fatigue"> Fatigue</label><label><input type="checkbox" name="sym" value="Blurred vision"> Blurred vision</label><label><input type="checkbox" name="sym" value="Unexplained weight loss"> Unexplained weight loss</label></div></fieldset>
+<div class="actions"><button class="btn" type="submit">Run prediction</button><button class="btn ghost" type="reset" id="reset">Reset</button></div>
+<p class="err" id="formErr"></p></form></section>
+<section id="results" class="panel" hidden><h2>Your result</h2>
+<div class="res"><div class="gauge"><svg viewBox="0 0 200 120" role="img" aria-label="Risk gauge"><path d="M20 100 A80 80 0 0 1 180 100" class="gbg"/><path id="garc" d="M20 100 A80 80 0 0 1 180 100" class="gfg"/></svg><div class="gtxt"><b id="pct">0%</b><span id="lvl">–</span></div></div>
+<div><p id="summary"></p><div id="alert" class="alert" hidden></div></div></div>
+<h3>What drives this estimate</h3><div id="factors"></div>
+<h3>Suggested next steps</h3><div id="recs" class="recs"></div>
+<div class="actions"><button class="btn" id="dlBtn">Download PDF report</button></div></section>
+<section id="architecture" class="sec"><p class="eyebrow rvs">Architecture</p><h2 class="rvs">Three engines, one clear answer.</h2>
+<div class="cards">
+<article class="card rvs"><h3>Glucose Predictor</h3><p>Reads glucose by test type, fasting, random or post-load, so the same number is judged correctly.</p>
+<div class="shuf" id="shuf"><div class="shc"><b>Fasting glucose</b><span>98 mg/dL · normal</span></div><div class="shc"><b>HbA1c</b><span>5.9 % · prediabetes range</span></div><div class="shc"><b>2-hr OGTT</b><span>152 mg/dL · elevated</span></div></div></article>
+<article class="card rvs"><h3>Metabolic Analyzer</h3><p>Combines age, BMI, blood pressure, activity and symptoms into one weighted score.</p><pre class="con" id="con" aria-live="off"></pre></article>
+<article class="card glow rvs" id="glow"><h3>Risk Stratification</h3><p>Places you in a clear tier and attaches the right next step to each one.</p>
+<ul class="tiers"><li><i style="background:#8fb573"></i>Low<span>Re-screen in 1–3 years</span></li><li><i style="background:#d9a441"></i>Moderate<span>Book a screening test</span></li><li><i style="background:#c47a5a"></i>High<span>Meet your doctor</span></li><li><i style="background:#d9534f"></i>Very high<span>See a doctor soon</span></li></ul></article></div></section>
+<section id="protocol" class="sec"><p class="eyebrow rvs">Protocol</p><h2 class="rvs">From data to decision in three steps.</h2>
+<div class="stack"><article class="step"><span class="num">01</span><h3>Enter your data</h3><p>Age, height and weight, glucose, HbA1c, blood pressure, family history, activity, symptoms, earlier results and pregnancy history, all validated as you type.</p></article>
+<article class="step"><span class="num">02</span><h3>Model scoring</h3><p>A transparent weighted logistic score using standard screening cut-offs. Readings in the diabetes range trigger a confirm-with-a-doctor alert.</p></article>
+<article class="step"><span class="num">03</span><h3>Act on it</h3><p>Get tier-based advice on doctor visits, tests and lifestyle, then download a PDF report with your name, sex and age to share with your clinician.</p></article></div></section>
+</main>
+<footer><div><span class="bn">Dia<b>Sense</b></span> <em class="ai">AI</em><p class="muted">Educational screening aid, not a diagnosis. Never start, stop or change medicines without medical advice.</p></div><span class="badge"><i class="pulse"></i>System Operational</span></footer>
+<dialog id="dlg"><form method="dialog" id="dform"><h3>Before you download</h3><p class="muted">These details are printed on your report.</p>
+<label>Full name *<input id="rName" required></label><label>Sex *<select id="rSex"><option>Female</option><option>Male</option><option>Other</option></select></label>
+<label>Age *<input id="rAge" type="number" min="1" max="120" required></label><label>Phone / Patient ID <small>(optional)</small><input id="rId"></label>
+<p class="err" id="dErr"></p><div class="actions"><button class="btn" value="ok" id="dOk">Generate PDF</button><button class="btn ghost" value="cancel" formnovalidate>Cancel</button></div></form></dialog>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="app.js"></script><script src="motion.js"></script></body></html>
